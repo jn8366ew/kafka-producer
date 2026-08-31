@@ -1,0 +1,78 @@
+### Windows ###
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Folder config file
+[Dd]esktop.ini
+
+# Dump file
+*.stackdump
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails / resource forks
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### Cursor ###
+.cursor/
+.cursorignore
+.cursorindexingignore
+# 팀과 공유할 규칙 파일이 있으면 아래 주석을 해제해서 되살릴 것
+# !.cursor/
+# !.cursor/rules/
+
+### JetBrains / IntelliJ IDEA ###
+.idea/
+# 공유가 필요한 설정만 되살리려면 아래 주석을 해제할 것
+# !.idea/
+# !.idea/codeStyles/
+# !.idea/runConfigurations/
+
+# Module / project files
+*.iml
+*.ipr
+*.iws
+
+# Build output
+out/
+cmake-build-*/
+
+# Misc
+atlassian-ide-plugin.xml
+.idea_modules/
