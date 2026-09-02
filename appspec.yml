@@ -17,10 +17,13 @@ file_exists_behavior: OVERWRITE
 
 # permisstions: file copy 후 권한 상세 지정
 # pattern, except 키워드를 통해 대상 상세지정 가능
+# 소유자는 AfterInstall 훅의 runas 와 반드시 일치시켜야 함.
+# ubuntu 소유 + mode 755 상태에서 kafka 로 훅을 돌리면 group 비트가 r-x 라
+# replace_secret.py 가 소스 파일을 쓰지 못하고 PermissionError 로 죽는다.
 permissions:
   - object: /src/kafka-producer
-    owner: ubuntu
-    group: ubuntu
+    owner: kafka
+    group: kafka
     mode: 755
 
 # hooks 를 통해 before/after 동작 수행 가능

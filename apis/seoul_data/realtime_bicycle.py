@@ -10,6 +10,10 @@ import traceback
 
 class RealtimeBicycle:
 
+    MAX_RETRY = 3  # 동일 구간 연속 재시도 최대 횟수
+    RETRY_WAIT = 30  # 재시도 전 대기 시간(초)
+    TIMEOUT = 10  # 요청 타임아웃(초)
+
     def __init__(self, dataset_nm):
         self.auth_key = "##auth_key_seoul_data##"
         self.api_url = "http://openapi.seoul.go.kr:8088"
@@ -17,6 +21,16 @@ class RealtimeBicycle:
         self.dataset_nm = dataset_nm
         self.chk_dir()
         self.log = self._get_logger()
+        self._chk_auth_key()
+
+    def _chk_auth_key(self):
+        # 치환되지 않은 플레이스홀더가 남아있으면 '#' 이 URL fragment 로 해석되어
+        # 요청이 루트 경로로 나가고 HTML 을 응답받는다. 원인 추적이 어려우므로 선제 차단
+        if "#" in self.auth_key:
+            raise RuntimeError(
+                f"인증키가 치환되지 않음: {self.auth_key} "
+                f"(deploy/replace_secret.py 실행 결과 확인 필요)"
+            )
 
     def call(self):
         # url 형태: http://openapi.seoul.go.kr:8088/(인증키)/json/bikeList/1/5/
@@ -24,28 +38,49 @@ class RealtimeBicycle:
         start = 1
         end = 1000
         total_rows = []
+        retry = 0
         while True:
+            rslt = None
             try:
                 rslt = self._call_api(base_url, start, end)
                 contents = json.loads(rslt.text)
-            except JSONDecodeError:
-                self.log.error(f"요청 실패, {traceback.format_exc()}")
-                time.sleep(30)  # 30초 대기 후 재시도
+            except (JSONDecodeError, requests.RequestException):
+                retry += 1
+                # 응답 본문을 함께 남겨야 인증키/네트워크/응답형식 중 무엇이 문제인지 구분 가능
+                status = rslt.status_code if rslt is not None else "N/A"
+                body = repr(rslt.text[:200]) if rslt is not None else "N/A"
+                self.log.error(
+                    f"요청 실패({retry}/{self.MAX_RETRY}), status: {status}, "
+                    f"body: {body}, {traceback.format_exc()}"
+                )
+                if retry >= self.MAX_RETRY:
+                    raise RuntimeError(f"{self.MAX_RETRY}회 연속 요청 실패, 중단")
+                time.sleep(self.RETRY_WAIT)
                 continue
 
-            # 정상이 아닌 경우 처리 -
+            # 정상이 아닌 경우 처리
             rslt_code = contents.get("CODE")
             if rslt_code:
                 # INFO-200: 해당하는 데이터 없음. total_rows 리스트에 값이 존재할 경우
                 # 조회 범위 초과로 에러 발생한 것이며 결과 리턴하고 종료
                 if rslt_code == "INFO-200" and total_rows:
                     return total_rows
-                else:
-                    rslt_msg = contents.get("MESSAGE")
-                    self.log.error(
-                        f"요청 실패, 에러코드: {rslt_code}, 메시지:{rslt_msg}"
+
+                retry += 1
+                rslt_msg = contents.get("MESSAGE")
+                self.log.error(
+                    f"요청 실패({retry}/{self.MAX_RETRY}), "
+                    f"에러코드: {rslt_code}, 메시지: {rslt_msg}"
+                )
+                if retry >= self.MAX_RETRY:
+                    raise RuntimeError(
+                        f"API 에러 응답, 에러코드: {rslt_code}, 메시지: {rslt_msg}"
                     )
-                    time.sleep(30)  # 30초 대기
+                time.sleep(self.RETRY_WAIT)
+                # 에러 응답을 아래 파싱 로직으로 흘려보내면 KeyError 로 다시 터지므로 재시도
+                continue
+
+            retry = 0  # 정상 응답을 받았으므로 재시도 카운트 초기화
 
             key_nm = list(contents.keys())[0]
             items = contents.get(key_nm)
@@ -71,7 +106,8 @@ class RealtimeBicycle:
             url = f"{base_url}/{start}/{end}/{base_dt}"
         else:
             url = f"{base_url}/{start}/{end}"
-        rslt = requests.get(url, headers)
+        # requests.get 의 두 번째 위치 인자는 params 이므로 headers 는 키워드로 전달해야 함
+        rslt = requests.get(url, headers=headers, timeout=self.TIMEOUT)
         return rslt
 
     def chk_dir(self):
@@ -96,6 +132,7 @@ class RealtimeBicycle:
         return logger
 
 
-real_bicycle = RealtimeBicycle(dataset_nm="bikeList")
-items = real_bicycle.call()
-print(items[0:10])
+if __name__ == "__main__":
+    real_bicycle = RealtimeBicycle(dataset_nm="bikeList")
+    items = real_bicycle.call()
+    print(items[0:10])
