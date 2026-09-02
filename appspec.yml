@@ -24,8 +24,9 @@ permissions:
     mode: 755
 
 # hooks 를 통해 before/after 동작 수행 가능
+# CodeDeploy 라이프사이클 이벤트명은 대소문자를 구분함 (AfterInstall)
 hooks:
-  Afterinstall:
+  AfterInstall:
     - location: deploy/after_install.sh
       timeout: 120
       runas: kafka
