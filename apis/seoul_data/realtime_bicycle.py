@@ -33,7 +33,7 @@ class RealtimeBicycle:
                 time.sleep(30)  # 30초 대기 후 재시도
                 continue
 
-            # 정상이 아닌 경우 처리
+            # 정상이 아닌 경우 처리 -
             rslt_code = contents.get("CODE")
             if rslt_code:
                 # INFO-200: 해당하는 데이터 없음. total_rows 리스트에 값이 존재할 경우
