@@ -1,0 +1,36 @@
+# 기본값: 텍스트 파일은 저장소와 워킹트리 모두 LF로 통일
+# (EC2/CodeDeploy 배포 대상이 Linux 이므로 LF 기준)
+* text=auto eol=lf
+
+# 셸 스크립트 — CRLF 로 올라가면 EC2 에서 `$'\r': command not found` 발생
+*.sh   text eol=lf
+*.bash text eol=lf
+
+# 배포 / 설정 / 소스
+*.py   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.txt  text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.cfg  text eol=lf
+*.ini  text eol=lf
+
+# Windows 전용 스크립트는 CRLF 유지해야 동작함
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# 바이너리 — 줄바꿈 변환 금지
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.gz   binary
+*.tgz  binary
+*.zip  binary
+*.jar  binary
+*.pyc  binary
+*.so   binary

@@ -1,3 +1,44 @@
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 패키징 / 빌드 산출물
+build/
+dist/
+downloads/
+.eggs/
+*.egg-info/
+*.egg
+MANIFEST
+
+# 가상환경 (로컬 venv, 배포 서버의 kafka_venv)
+venv/
+.venv/
+env/
+ENV/
+kafka_venv/
+pyvenv.cfg
+
+# 테스트 / 커버리지 / 린터 캐시
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 환경변수 / 시크릿 (Kafka 브로커 주소·인증정보가 들어갈 자리)
+.env
+.env.*
+!.env.example
+
 ### Windows ###
 Thumbs.db
 Thumbs.db:encryptable
@@ -49,13 +90,27 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-### Cursor ###
-.cursor/
-.cursorignore
-.cursorindexingignore
-# 팀과 공유할 규칙 파일이 있으면 아래 주석을 해제해서 되살릴 것
-# !.cursor/
-# !.cursor/rules/
+### Linux (AWS EC2 / Amazon Linux / Ubuntu) ###
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+### AWS / 배포 ###
+# EC2 접속 키 — 절대 커밋 금지
+*.pem
+*.ppk
+.aws/
+credentials
+
+# CodeDeploy 번들 산출물 (master.yml에서 tar.gz로 말아 S3 업로드)
+*.tar.gz
+*.zip
+
+# 로그
+*.log
+logs/
 
 ### JetBrains / IntelliJ IDEA ###
 .idea/
@@ -76,3 +131,21 @@ cmake-build-*/
 # Misc
 atlassian-ide-plugin.xml
 .idea_modules/
+
+### VS Code ###
+.vscode/
+# 팀과 공유할 설정이 있으면 아래 주석을 해제해서 되살릴 것
+# !.vscode/
+# !.vscode/settings.json
+# !.vscode/extensions.json
+# !.vscode/launch.json
+*.code-workspace
+.history/
+
+### Cursor ###
+.cursor/
+.cursorignore
+.cursorindexingignore
+# 팀과 공유할 규칙 파일이 있으면 아래 주석을 해제해서 되살릴 것
+# !.cursor/
+# !.cursor/rules/
