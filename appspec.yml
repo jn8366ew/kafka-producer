@@ -24,3 +24,8 @@ permissions:
     mode: 755
 
 # hooks 를 통해 before/after 동작 수행 가능
+hooks:
+  Afterinstall:
+    - location: deploy/after_install.sh
+      timeout: 120
+      runas: kafka
