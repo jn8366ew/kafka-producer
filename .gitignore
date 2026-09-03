@@ -149,3 +149,8 @@ atlassian-ide-plugin.xml
 # 팀과 공유할 규칙 파일이 있으면 아래 주석을 해제해서 되살릴 것
 # !.cursor/
 # !.cursor/rules/
+
+
+### 삽질 기록 ###
+# 공개 레포에 올리지 않고 로컬에서만 관리
+docs/
